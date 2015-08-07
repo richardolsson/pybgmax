@@ -5,7 +5,7 @@ from pybgmax import parser, errors
 
 
 
-class TestStartEnd(unittest.TestCase):
+class TestEnvelope(unittest.TestCase):
     def test_correctly_formatted_empty(self):
         data = '\n'.join((
             '01BGMAX               0120150805133822000100P                                   ',
