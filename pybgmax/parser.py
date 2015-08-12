@@ -31,18 +31,24 @@ class BgMaxParser(object):
         self.__parse_header()
 
         self.__lidx = 1
-        while self.__lidx < len(self.__lines)-1:
+        while self.__lidx < len(self.__lines):
             line = self.__lines[self.__lidx]
             tc = line[0:2]
             if tc == '70':
                 self.__parse_footer()
                 self.__lidx += 1
-                if self.__lidx < len(self.__lines):
-                    raise errors.FormatError('Trailing data is not allowed')
+                break
             elif tc == '05':
                 self.__parse_section()
             else:
                 raise errors.FormatError('Unknown TC %s' % tc)
+
+        # Check for trailing data
+        while self.__lidx < len(self.__lines):
+            line = self.__lines[self.__lidx].strip()
+            self.__lidx += 1
+            if len(line) > 0:
+                raise errors.FormatError('Trailing data is not allowed')
 
         return content.BgMaxFile(
             format_version = self.__header[1],
