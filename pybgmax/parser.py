@@ -95,9 +95,16 @@ class BgMaxParser(object):
         payments = []
 
         self.__lidx += 1
-        while self.__lines[self.__lidx][0:2] == '20':
-            payment = self.__parse_payment()
-            payments.append(payment)
+        while self.__lines[self.__lidx][0:2] in ('20', '21'):
+            line = self.__lines[self.__lidx]
+            tc = line[0:2]
+
+            if tc == '20':
+                payment = self.__parse_payment()
+                payments.append(payment)
+            elif tc == '21':
+                # TODO: Implement deductions
+                self.__lidx += 1
 
         line = self.__lines[self.__lidx]
         tc = line[0:2]

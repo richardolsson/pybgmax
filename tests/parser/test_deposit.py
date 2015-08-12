@@ -36,3 +36,16 @@ class TestDeposit(unittest.TestCase):
         self.assertEquals(p.channel, pybgmax.CHANNEL_EBANK)
         self.assertEquals(p.serial, '497850277070')
         self.assertFalse(p.has_image)
+
+    def test_deduction(self):
+        # Deductions are not implemented but should not fail
+        data = '\n'.join((
+            '01BGMAX               0120120914173035010331P                                   ',
+            '050009912346          SEK                                                       ',
+            '210000000000                  1500073000000000000000100214978502770700          ',
+            '15000000000000000000058410000010098232009060300036000000000000070000SEK00000004 ',
+            '7000000001000000000000000000000000                                              '
+        ))
+
+        f = parser.parse(data)
+        self.assertEquals(len(f.payments), 0)
