@@ -95,7 +95,7 @@ class BgMaxParser(object):
         payments = []
 
         self.__lidx += 1
-        while self.__lines[self.__lidx][0:2] in ('20', '21'):
+        while self.__lidx < len(self.__lines):
             line = self.__lines[self.__lidx]
             tc = line[0:2]
 
@@ -105,26 +105,27 @@ class BgMaxParser(object):
             elif tc == '21':
                 # TODO: Implement deductions
                 self.__lidx += 1
+            elif tc == '70':
+                raise errors.FormatError('Missing deposit line')
+            elif tc == '15':
+                # End of deposit
+                account = line[2:37].lstrip('0')
+                serial = line[45:50].lstrip('0')
 
-        line = self.__lines[self.__lidx]
-        tc = line[0:2]
-        if tc != '15':
-            raise errors.FormatError('Missing deposit line')
+                # TODO: Parse date
 
-        account = line[2:37].lstrip('0')
-        serial = line[45:50]
+                deposit = content.Deposit(bg, pg, cur, account, serial, payments)
+                self.__deposits.append(deposit)
 
-        deposit = content.Deposit(bg, pg, cur, account, serial, payments)
-        self.__deposits.append(deposit)
-
-        self.__lidx += 1
+                self.__lidx += 1
+                return
+            else:
+                # Skip unknown line within deposit
+                self.__lidx += 1
 
     def __parse_payment(self):
         line = self.__lines[self.__lidx]
         tc = line[0:2]
-
-        if tc != '20':
-            raise errors.FormatError('Unexpected TC "%s", expected "20"' % tc)
 
         name = None
         address = []
@@ -149,7 +150,7 @@ class BgMaxParser(object):
             line = self.__lines[self.__lidx]
             tc = line[0:2]
 
-            if tc == '20' or tc == '15':
+            if tc == '20' or tc == '15' or tc == '70':
                 # End of payment (new one started or deposit ends here)
                 sender = content.PaymentSender(bg)
                 payment = content.Payment(amount, sender, ref, channel,
