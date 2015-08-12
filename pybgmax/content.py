@@ -80,8 +80,23 @@ class PaymentReference(object):
         return self.__ref_str
 
 class PaymentSender(object):
-    def __init__(self, bg):
+    def __init__(self, bg, name, address_lines, org_no):
         self.__bg = bg
+        self.__name = name
+        self.__address = address_lines
+        self.__org_no = org_no
+
+    @property
+    def name(self):
+        return self.__name
+
+    @property
+    def address(self):
+        return self.__address
+
+    @property
+    def org_no(self):
+        return self.__org_no
 
     @property
     def bg(self):
@@ -142,3 +157,8 @@ class PgNo(FormattedNumber):
     def __str__(self):
         s = self._raw_str
         return '%s-%s' % (s[0:-1], s[-1])
+
+class OrgNo(FormattedNumber):
+    def __str__(self):
+        s = self._raw_str
+        return '%s-%s' % (s[0:6], s[6:10])

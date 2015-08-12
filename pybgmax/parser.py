@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 
 import errors
@@ -158,13 +159,22 @@ class BgMaxParser(object):
 
             if tc == '20' or tc == '15' or tc == '70':
                 # End of payment (new one started or deposit ends here)
-                sender = content.PaymentSender(bg)
+                sender = content.PaymentSender(bg, name, address, org_no)
                 payment = content.Payment(amount, sender, ref, channel,
                                             serial, has_image)
 
                 self.__payments.append(payment)
 
                 return payment
+            elif tc == '26':
+                name = line[2:].strip()
+            elif tc == '27':
+                addr_with_collapsed_ws = re.sub(r'\s+', ' ', line[2:])
+                address.insert(0, addr_with_collapsed_ws.strip())
+            elif tc == '28':
+                address.append(line[2:].strip())
+            elif tc == '29':
+                org_no = content.OrgNo(line[2:].strip().lstrip('0'))
 
             self.__lidx += 1
 
