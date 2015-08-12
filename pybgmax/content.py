@@ -120,7 +120,7 @@ class Payment(object):
     def has_image(self):
         return self.__has_image
 
-class BgNo(object):
+class FormattedNumber(object):
     def __init__(self, raw):
         self._raw_str = str(raw)
         self._raw_no = int(raw)
@@ -133,11 +133,12 @@ class BgNo(object):
     def raw_no(self):
         return self._raw_no
 
+class BgNo(FormattedNumber):
     def __str__(self):
         s = self._raw_str
         return '%s-%s' % (s[0:3], s[3:])
 
-class PgNo(BgNo):
+class PgNo(FormattedNumber):
     def __str__(self):
         s = self._raw_str
         return '%s-%s' % (s[0:-1], s[-1])
