@@ -122,22 +122,22 @@ class Payment(object):
 
 class BgNo(object):
     def __init__(self, raw):
-        self.__raw_str = raw
-        self.__raw_no = int(raw)
+        self._raw_str = str(raw)
+        self._raw_no = int(raw)
 
     @property
     def raw(self):
-        return self.__raw_str
+        return self._raw_str
 
     @property
     def raw_no(self):
-        return self.__raw_no
+        return self._raw_no
 
     def __str__(self):
-        s = self.__raw_str
+        s = self._raw_str
         return '%s-%s' % (s[0:3], s[3:])
 
 class PgNo(BgNo):
     def __str__(self):
-        s = self.__raw_str
+        s = self._raw_str
         return '%s-%s' % (s[0:-1], s[-1])

@@ -1,3 +1,13 @@
+from content import (
+    BgMaxFile,
+    Deposit,
+    PaymentReference,
+    PaymentSender,
+    Payment,
+    BgNo,
+    PgNo,
+)
+
 REFTYPE_BLANK = 0
 REFTYPE_UNAVAILABLE = 1
 REFTYPE_OCR = 2
