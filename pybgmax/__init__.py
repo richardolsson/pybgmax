@@ -1,4 +1,4 @@
-from content import (
+from pybgmax.content import (
     BgMaxFile,
     Deposit,
     PaymentReference,
@@ -8,7 +8,7 @@ from content import (
     PgNo,
 )
 
-from parser import parse
+from pybgmax.parser import parse
 
 REFTYPE_BLANK = 0
 REFTYPE_UNAVAILABLE = 1

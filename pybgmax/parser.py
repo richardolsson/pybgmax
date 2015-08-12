@@ -1,8 +1,7 @@
 import re
 from datetime import datetime
 
-import errors
-import content
+from pybgmax import errors, content
 
 
 def parse(data):
