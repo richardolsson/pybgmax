@@ -29,6 +29,8 @@ def load(txt_file):
             data = fp.read()
     elif hasattr(txt_file, 'read'):
         data = txt_file.read()
+        if isinstance(data, bytes):
+            data = data.decode('utf-8')
     else:
         raise ValueError('txt_file must be file-like or path string')
 
