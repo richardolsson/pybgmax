@@ -34,11 +34,13 @@ class BgMaxFile(object):
     def deposits(self):
         return self.__deposits
 
+
 class Deposit(object):
-    def __init__(self, bg, pg, currency, account_no, serial_no, payments):
+    def __init__(self, bg, pg, currency, date, account_no, serial_no, payments):
         self.__bg = bg
         self.__pg = pg
         self.__currency = currency
+        self.__date = date
         self.__account = account_no
         self.__serial = serial_no
         self.__payments = payments
@@ -54,6 +56,10 @@ class Deposit(object):
     @property
     def currency(self):
         return self.__currency
+
+    @property
+    def payment_date(self):
+        return self.__date
 
     @property
     def account(self):

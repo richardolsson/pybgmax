@@ -116,11 +116,11 @@ class BgMaxParser(object):
             elif tc == '15':
                 # End of deposit
                 account = line[2:37].lstrip('0')
+                date = line[37:45]
                 serial = line[45:50].lstrip('0')
 
-                # TODO: Parse date
-
-                deposit = content.Deposit(bg, pg, cur, account, serial, payments)
+                deposit = content.Deposit(
+                    bg, pg, cur, date, account, serial, payments)
                 self.__deposits.append(deposit)
 
                 self.__lidx += 1
