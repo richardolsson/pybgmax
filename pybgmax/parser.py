@@ -15,6 +15,7 @@ class BgMaxParser(object):
         self.__lines = []
         self.__header = None
         self.__payments = []
+        self.__deductions = []
         self.__deposits = []
 
     def parse(self, data):
@@ -51,11 +52,12 @@ class BgMaxParser(object):
                 raise errors.FormatError('Trailing data is not allowed')
 
         return content.BgMaxFile(
-            format_version = self.__header[1],
-            timestamp = self.__header[2],
-            stage = self.__header[3],
-            deposits = self.__deposits,
-            payments = self.__payments,
+            format_version=self.__header[1],
+            timestamp=self.__header[2],
+            stage=self.__header[3],
+            deposits=self.__deposits,
+            payments=self.__payments,
+            deductions=self.__deductions
         )
 
     def __parse_header(self):
@@ -99,6 +101,7 @@ class BgMaxParser(object):
 
         cur = line[22:25]
         payments = []
+        deductions = []
 
         self.__lidx += 1
         while self.__lidx < len(self.__lines):
@@ -109,8 +112,8 @@ class BgMaxParser(object):
                 payment = self.__parse_payment()
                 payments.append(payment)
             elif tc == '21':
-                # TODO: Implement deductions
-                self.__lidx += 1
+                deduction = self.__parse_payment(deduction=True)
+                deductions.append(deduction)
             elif tc == '70':
                 raise errors.FormatError('Missing deposit line')
             elif tc == '15':
@@ -120,7 +123,7 @@ class BgMaxParser(object):
                 serial = line[45:50].lstrip('0')
 
                 deposit = content.Deposit(
-                    bg, pg, cur, date, account, serial, payments)
+                    bg, pg, cur, date, account, serial, payments, deductions)
                 self.__deposits.append(deposit)
 
                 self.__lidx += 1
@@ -129,13 +132,14 @@ class BgMaxParser(object):
                 # Skip unknown line within deposit
                 self.__lidx += 1
 
-    def __parse_payment(self):
+    def __parse_payment(self, deduction=False):
         line = self.__lines[self.__lidx]
         tc = line[0:2]
 
         name = None
         address = []
         org_no = None
+        deduction_code = None
 
         bg = None
         bg_str = line[2:12].lstrip('0')
@@ -150,21 +154,29 @@ class BgMaxParser(object):
         channel = int(line[56])
         serial = line[57:69].strip()
         has_image = (line[69] == '1')
+        if deduction:
+            str_deduction_code = line[70]
+            if str_deduction_code != ' ':
+                deduction_code = int(str_deduction_code)
 
         self.__lidx += 1
         while self.__lidx < len(self.__lines):
             line = self.__lines[self.__lidx]
             tc = line[0:2]
 
-            if tc == '20' or tc == '15' or tc == '70':
+            if tc == '20' or tc == '21' or tc == '15' or tc == '70':
                 # End of payment (new one started or deposit ends here)
                 sender = content.PaymentSender(bg, name, address, org_no)
-                payment = content.Payment(amount, sender, ref, channel,
-                                            serial, has_image)
+                if deduction:
+                    entity = content.Deduction(
+                        amount, sender, ref, channel, serial, has_image, deduction_code)
+                    self.__deductions.append(entity)
+                else:
+                    entity = content.Payment(
+                        amount, sender, ref, channel, serial, has_image)
+                    self.__payments.append(entity)
 
-                self.__payments.append(payment)
-
-                return payment
+                return entity
             elif tc == '26':
                 name = line[2:].strip()
             elif tc == '27':

@@ -86,7 +86,6 @@ class TestDeposit(unittest.TestCase):
         self.assertFalse(p.has_image)
 
     def test_deduction(self):
-        # Deductions are not implemented but should not fail
         data = '\n'.join((
             '01BGMAX               0120120914173035010331P                                   ',
             '050009912346          SEK                                                       ',
@@ -97,7 +96,7 @@ class TestDeposit(unittest.TestCase):
         ))
 
         f = parser.parse(data)
-        self.assertEquals(len(f.payments), 0)
+        self.assertEquals(len(f.deductions), 1)
 
 
 class TestDepositErrors(unittest.TestCase):

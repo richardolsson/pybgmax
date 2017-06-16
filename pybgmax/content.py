@@ -1,13 +1,15 @@
 from datetime import datetime
 
-class BgMaxFile(object):
-    def __init__(self, format_version, timestamp, stage,
-        deposits=[], payments=[]):
 
+class BgMaxFile(object):
+
+    def __init__(self, format_version, timestamp, stage,
+                 payments=[], deductions=[], deposits=[]):
         self.__version = format_version
         self.__timestamp = timestamp
         self.__stage = stage
         self.__payments = payments
+        self.__deductions = deductions
         self.__deposits = deposits
 
     @property
@@ -31,12 +33,17 @@ class BgMaxFile(object):
         return self.__payments
 
     @property
+    def deductions(self):
+        return self.__deductions
+
+    @property
     def deposits(self):
         return self.__deposits
 
 
 class Deposit(object):
-    def __init__(self, bg, pg, currency, date, account_no, serial_no, payments):
+    def __init__(self, bg, pg, currency, date, account_no,
+                 serial_no, payments, deductions):
         self.__bg = bg
         self.__pg = pg
         self.__currency = currency
@@ -44,6 +51,7 @@ class Deposit(object):
         self.__account = account_no
         self.__serial = serial_no
         self.__payments = payments
+        self.__deductions = deductions
 
     @property
     def bg(self):
@@ -73,6 +81,11 @@ class Deposit(object):
     def payments(self):
         return self.__payments
 
+    @property
+    def deductions(self):
+        return self.__deductions
+
+
 class PaymentReference(object):
     def __init__(self, ref_str, ref_type):
         self.__ref_str = ref_str
@@ -84,6 +97,7 @@ class PaymentReference(object):
 
     def __str__(self):
         return self.__ref_str
+
 
 class PaymentSender(object):
     def __init__(self, bg, name, address_lines, org_no):
@@ -107,6 +121,7 @@ class PaymentSender(object):
     @property
     def bg(self):
         return self.__bg
+
 
 class Payment(object):
     def __init__(self, amount, sender, ref, channel, serial, has_image):
@@ -141,6 +156,19 @@ class Payment(object):
     def has_image(self):
         return self.__has_image
 
+
+class Deduction(Payment):
+
+    def __init__(self, amount, sender, ref, channel, serial, has_image, deduction_code):
+        super().__init__(amount, sender, ref, channel, serial, has_image)
+
+        self.__deduction_code = deduction_code
+
+    @property
+    def deduction_code(self):
+        return self.__deduction_code
+
+
 class FormattedNumber(object):
     def __init__(self, raw):
         self._raw_str = str(raw)
@@ -154,15 +182,22 @@ class FormattedNumber(object):
     def raw_no(self):
         return self._raw_no
 
+
 class BgNo(FormattedNumber):
+    """Sender-Bankgiro Number"""
+
     def __str__(self):
         s = self._raw_str
         return '%s-%s' % (s[0:3], s[3:])
 
+
 class PgNo(FormattedNumber):
+    """"""
+
     def __str__(self):
         s = self._raw_str
         return '%s-%s' % (s[0:-1], s[-1])
+
 
 class OrgNo(FormattedNumber):
     def __str__(self):
