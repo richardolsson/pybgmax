@@ -10,6 +10,7 @@ def parse(data):
 
 
 class BgMaxParser(object):
+
     def __init__(self):
         self.__lidx = 0
         self.__lines = []
@@ -137,6 +138,9 @@ class BgMaxParser(object):
         tc = line[0:2]
 
         name = None
+        extra_name = None
+        payment_information = None
+
         address = []
         org_no = None
         deduction_code = None
@@ -169,16 +173,23 @@ class BgMaxParser(object):
                 sender = content.PaymentSender(bg, name, address, org_no)
                 if deduction:
                     entity = content.Deduction(
-                        amount, sender, ref, channel, serial, has_image, deduction_code)
+                        amount, sender, ref, channel, serial, has_image,
+                        payment_information, deduction_code)
                     self.__deductions.append(entity)
                 else:
                     entity = content.Payment(
-                        amount, sender, ref, channel, serial, has_image)
+                        amount, sender, ref, channel, serial, has_image,
+                        payment_information)
                     self.__payments.append(entity)
 
                 return entity
+            elif tc == '25':
+                information_text = line[2:].strip()
+                payment_information = content.PaymentInformation(
+                    information_text)
             elif tc == '26':
-                name = line[2:].strip()
+                name = line[2:37].strip()
+                extra_name = line[37:].strip()
             elif tc == '27':
                 addr_with_collapsed_ws = re.sub(r'\s+', ' ', line[2:])
                 address.insert(0, addr_with_collapsed_ws.strip())

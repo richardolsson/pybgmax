@@ -42,6 +42,7 @@ class BgMaxFile(object):
 
 
 class Deposit(object):
+
     def __init__(self, bg, pg, currency, date, account_no,
                  serial_no, payments, deductions):
         self.__bg = bg
@@ -86,7 +87,14 @@ class Deposit(object):
         return self.__deductions
 
 
+class PaymentAddress(object):
+
+    def __init__(self):
+        pass
+
+
 class PaymentReference(object):
+
     def __init__(self, ref_str, ref_type):
         self.__ref_str = ref_str
         self.__ref_type = ref_type
@@ -100,6 +108,7 @@ class PaymentReference(object):
 
 
 class PaymentSender(object):
+
     def __init__(self, bg, name, address_lines, org_no):
         self.__bg = bg
         self.__name = name
@@ -123,14 +132,25 @@ class PaymentSender(object):
         return self.__bg
 
 
+class PaymentInformation(object):
+
+    def __init__(self, information_text):
+        self.__information_str = information_text
+
+    def __str__(self):
+        return self.__information_str
+
+
 class Payment(object):
-    def __init__(self, amount, sender, ref, channel, serial, has_image):
+    def __init__(self, amount, sender, ref, channel, serial, has_image,
+                 payment_information):
         self.__amount = amount
         self.__sender = sender
         self.__ref = ref
         self.__channel = channel
         self.__serial = serial
         self.__has_image = has_image
+        self.__information_text = payment_information
 
     @property
     def amount(self):
@@ -156,11 +176,17 @@ class Payment(object):
     def has_image(self):
         return self.__has_image
 
+    @property
+    def information_text(self):
+        return str(self.__information_text)
+
 
 class Deduction(Payment):
 
-    def __init__(self, amount, sender, ref, channel, serial, has_image, deduction_code):
-        super().__init__(amount, sender, ref, channel, serial, has_image)
+    def __init__(self, amount, sender, ref, channel, serial, has_image,
+                 payment_information, deduction_code):
+        super().__init__(amount, sender, ref, channel, serial, has_image,
+                         payment_information)
 
         self.__deduction_code = deduction_code
 

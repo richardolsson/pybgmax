@@ -90,6 +90,7 @@ class TestDeposit(unittest.TestCase):
             '01BGMAX               0120120914173035010331P                                   ',
             '050009912346          SEK                                                       ',
             '210000000000                  1500073000000000000000100214978502770700          ',
+            '25Betalning med extra refnr 65test                                              ',
             '26JANE DOE                                                                      ',
             '15000000000000000000058410000010098232009060300036000000000000070000SEK00000004 ',
             '7000000001000000000000000000000000                                              '
@@ -97,6 +98,25 @@ class TestDeposit(unittest.TestCase):
 
         f = parser.parse(data)
         self.assertEquals(len(f.deductions), 1)
+
+    def test_payment_description(self):
+        data = '\n'.join((
+            '01BGMAX               0120120914173035010331P                                   ',
+            '050009912346          SEK                                                       ',
+            '200000000000                  1500073000000000000000100214978502770700          ',
+            '25Betalning med extra refnr 65test                                              ',
+            '26JANE DOE                                                                      ',
+            '15000000000000000000058410000010098232009060300036000000000000070000SEK00000004 ',
+            '7000000001000000000000000000000000                                              '
+        ))
+
+        f = parser.parse(data)
+        p = f.payments[0]
+
+        self.assertEquals(p.information_text, 'Betalning med extra refnr 65test')
+
+    def test_payment_sender_address(self):
+        pass
 
 
 class TestDepositErrors(unittest.TestCase):
