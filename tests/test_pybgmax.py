@@ -17,7 +17,7 @@ class TestParseFunction(unittest.TestCase):
         self.assertEquals(f.stage, 'P')
         self.assertFalse(f.is_test)
         self.assertEquals(len(f.payments), 0)
-        
+
     def test_load_filelike(self):
         with open('tests/samples/multipayment.txt', 'r') as fp:
             f = pybgmax.load(fp)

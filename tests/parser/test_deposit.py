@@ -22,6 +22,7 @@ class TestDeposit(unittest.TestCase):
         self.assertIsInstance(d.bg, content.BgNo)
         self.assertEquals(str(d.bg), '991-2346')
         self.assertEquals(d.currency, 'SEK')
+        self.assertEquals(d.payment_date, '20090603')
         self.assertIsNone(d.pg)
         self.assertEquals(len(d.payments), 1)
         self.assertEquals(d.payments[0], f.payments[0])
@@ -55,6 +56,7 @@ class TestDeposit(unittest.TestCase):
         self.assertIsInstance(d.bg, content.BgNo)
         self.assertEquals(str(d.bg), '991-2346')
         self.assertEquals(d.currency, 'SEK')
+        self.assertEquals(d.payment_date, '20090603')
         self.assertIsNone(d.pg)
         self.assertEquals(len(d.payments), 2)
         self.assertEquals(d.payments[0], f.payments[0])
@@ -84,7 +86,6 @@ class TestDeposit(unittest.TestCase):
         self.assertFalse(p.has_image)
 
     def test_deduction(self):
-        # Deductions are not implemented but should not fail
         data = '\n'.join((
             '01BGMAX               0120120914173035010331P                                   ',
             '050009912346          SEK                                                       ',
@@ -95,7 +96,7 @@ class TestDeposit(unittest.TestCase):
         ))
 
         f = parser.parse(data)
-        self.assertEquals(len(f.payments), 0)
+        self.assertEquals(len(f.deductions), 1)
 
 
 class TestDepositErrors(unittest.TestCase):
