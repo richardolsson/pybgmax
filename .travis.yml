@@ -1,0 +1,5 @@
+language: python
+sudo: false
+script: py.test .
+python:
+  - "3.6"
