@@ -141,7 +141,13 @@ class BgMaxParser(object):
         extra_name = None
         payment_information = None
 
-        address = []
+        payment_address = None
+        address = None
+        post_code = None
+        town = None
+        country = None
+        country_code = None
+
         org_no = None
         deduction_code = None
 
@@ -170,7 +176,10 @@ class BgMaxParser(object):
 
             if tc == '20' or tc == '21' or tc == '15' or tc == '70':
                 # End of payment (new one started or deposit ends here)
-                sender = content.PaymentSender(bg, name, address, org_no)
+                payment_address = content.PaymentAddress(
+                    address, post_code, town, country, country_code)
+                sender = content.PaymentSender(
+                    bg, name, payment_address, org_no)
                 if deduction:
                     entity = content.Deduction(
                         amount, sender, ref, channel, serial, has_image,
@@ -189,12 +198,14 @@ class BgMaxParser(object):
                     information_text)
             elif tc == '26':
                 name = line[2:37].strip()
-                extra_name = line[37:].strip()
+                extra_name = line[37:72].strip()
             elif tc == '27':
-                addr_with_collapsed_ws = re.sub(r'\s+', ' ', line[2:])
-                address.insert(0, addr_with_collapsed_ws.strip())
+                address = line[2:37].strip()
+                post_code = line[37:46].strip()
             elif tc == '28':
-                address.append(line[2:].strip())
+                town = line[2:37].strip()
+                country = line[37:72].strip()
+                country_code = line[72:74].strip()
             elif tc == '29':
                 org_no = content.OrgNo(line[2:].strip().lstrip('0'))
 

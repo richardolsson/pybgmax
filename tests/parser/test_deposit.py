@@ -116,7 +116,25 @@ class TestDeposit(unittest.TestCase):
         self.assertEquals(p.information_text, 'Betalning med extra refnr 65test')
 
     def test_payment_sender_address(self):
-        pass
+        data = '\n'.join((
+            '01BGMAX               0120120914173035010331P                                   ',
+            '050009912346          SEK                                                       ',
+            '200000000000                  1500073000000000000000100214978502770700          ',
+            '27Storozhenka 14 Storozhenka 14      80000                                      ',
+            '28Kyiv                                                                  UA      ',
+            '15000000000000000000058410000010098232009060300036000000000000070000SEK00000004 ',
+            '7000000001000000000000000000000000                                              '
+        ))
+
+        f = parser.parse(data)
+        self.assertEquals(len(f.payments), 1)
+
+        p = f.payments[0]
+        self.assertEquals(p.sender.address.address, 'Storozhenka 14 Storozhenka 14')
+        self.assertEquals(p.sender.address.post_code, '80000')
+        self.assertEquals(p.sender.address.town, 'Kyiv')
+        self.assertEquals(p.sender.address.country, '')
+        self.assertEquals(p.sender.address.country_code, 'UA')
 
 
 class TestDepositErrors(unittest.TestCase):

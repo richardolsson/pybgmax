@@ -89,8 +89,32 @@ class Deposit(object):
 
 class PaymentAddress(object):
 
-    def __init__(self):
-        pass
+    def __init__(self, address, post_code, town, country, country_code):
+        self.__address = address
+        self.__post_code = post_code
+        self.__town = town
+        self.__country = country
+        self.__country_code = country_code
+
+    @property
+    def address(self):
+        return self.__address
+
+    @property
+    def post_code(self):
+        return self.__post_code
+
+    @property
+    def town(self):
+        return self.__town
+
+    @property
+    def country(self):
+        return self.__country
+
+    @property
+    def country_code(self):
+        return self.__country_code
 
 
 class PaymentReference(object):
