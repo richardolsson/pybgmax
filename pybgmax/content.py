@@ -1,6 +1,3 @@
-from datetime import datetime
-
-
 class BgMaxFile(object):
 
     def __init__(self, format_version, timestamp, stage,
@@ -42,6 +39,7 @@ class BgMaxFile(object):
 
 
 class Deposit(object):
+
     def __init__(self, bg, pg, currency, date, account_no,
                  serial_no, payments, deductions):
         self.__bg = bg
@@ -86,7 +84,38 @@ class Deposit(object):
         return self.__deductions
 
 
+class PaymentAddress(object):
+
+    def __init__(self, address, post_code, town, country, country_code):
+        self.__address = address
+        self.__post_code = post_code
+        self.__town = town
+        self.__country = country
+        self.__country_code = country_code
+
+    @property
+    def address(self):
+        return self.__address
+
+    @property
+    def post_code(self):
+        return self.__post_code
+
+    @property
+    def town(self):
+        return self.__town
+
+    @property
+    def country(self):
+        return self.__country
+
+    @property
+    def country_code(self):
+        return self.__country_code
+
+
 class PaymentReference(object):
+
     def __init__(self, ref_str, ref_type):
         self.__ref_str = ref_str
         self.__ref_type = ref_type
@@ -100,6 +129,7 @@ class PaymentReference(object):
 
 
 class PaymentSender(object):
+
     def __init__(self, bg, name, address_lines, org_no):
         self.__bg = bg
         self.__name = name
@@ -123,14 +153,25 @@ class PaymentSender(object):
         return self.__bg
 
 
+class PaymentInformation(object):
+
+    def __init__(self, information_text):
+        self.__information_str = information_text
+
+    def __str__(self):
+        return self.__information_str
+
+
 class Payment(object):
-    def __init__(self, amount, sender, ref, channel, serial, has_image):
+    def __init__(self, amount, sender, references, channel, serial,
+                 has_image, payment_informations):
         self.__amount = amount
         self.__sender = sender
-        self.__ref = ref
+        self.__references = references
         self.__channel = channel
         self.__serial = serial
         self.__has_image = has_image
+        self.__information_text = payment_informations
 
     @property
     def amount(self):
@@ -141,8 +182,8 @@ class Payment(object):
         return self.__sender
 
     @property
-    def ref(self):
-        return self.__ref
+    def references(self):
+        return self.__references
 
     @property
     def channel(self):
@@ -156,11 +197,17 @@ class Payment(object):
     def has_image(self):
         return self.__has_image
 
+    @property
+    def information_text(self):
+        return self.__information_text
+
 
 class Deduction(Payment):
 
-    def __init__(self, amount, sender, ref, channel, serial, has_image, deduction_code):
-        super().__init__(amount, sender, ref, channel, serial, has_image)
+    def __init__(self, amount, sender, references, channel, serial,
+                 has_image, payment_informations, deduction_code):
+        super().__init__(amount, sender, references, channel, serial,
+                         has_image, payment_informations)
 
         self.__deduction_code = deduction_code
 

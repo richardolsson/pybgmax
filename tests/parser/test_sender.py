@@ -49,8 +49,9 @@ class TestSenderInfo(unittest.TestCase):
 
         p = f.payments[0]
         self.assertEquals(p.sender.name, 'Kalles Plat AB')
-        self.assertEquals(p.sender.address[0], 'Storgatan 2 12345')
-        self.assertEquals(p.sender.address[1], 'Storaker')
+        self.assertEquals(p.sender.address.address, 'Storgatan 2')
+        self.assertEquals(p.sender.address.post_code, '12345')
+        self.assertEquals(p.sender.address.town, 'Storaker')
 
     def test_unknown_sender_field(self):
         data = '\n'.join((
@@ -70,5 +71,6 @@ class TestSenderInfo(unittest.TestCase):
 
         p = f.payments[0]
         self.assertEquals(p.sender.name, 'Kalles Plat AB')
-        self.assertEquals(p.sender.address[0], 'Storgatan 2 12345')
-        self.assertEquals(p.sender.address[1], 'Storaker')
+        self.assertEquals(p.sender.address.address, 'Storgatan 2')
+        self.assertEquals(p.sender.address.post_code, '12345')
+        self.assertEquals(p.sender.address.town, 'Storaker')

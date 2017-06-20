@@ -10,6 +10,7 @@ def parse(data):
 
 
 class BgMaxParser(object):
+
     def __init__(self):
         self.__lidx = 0
         self.__lines = []
@@ -136,8 +137,20 @@ class BgMaxParser(object):
         line = self.__lines[self.__lidx]
         tc = line[0:2]
 
+        references = []
+        payment_informations = []
+
         name = None
-        address = []
+        extra_name = None
+        payment_information = None
+
+        payment_address = None
+        address = None
+        post_code = None
+        town = None
+        country = None
+        country_code = None
+
         org_no = None
         deduction_code = None
 
@@ -146,9 +159,8 @@ class BgMaxParser(object):
         if bg_str is not None and len(bg_str) > 0:
             bg = content.BgNo(bg_str)
 
-        ref_str = line[12:37].strip()
-        ref_type = int(line[55])
-        ref = content.PaymentReference(ref_str, ref_type)
+        reference = self.__parse_reference(line)
+        references.append(reference)
 
         amount = float(line[37:55]) / 100.0
         channel = int(line[56])
@@ -166,28 +178,51 @@ class BgMaxParser(object):
 
             if tc == '20' or tc == '21' or tc == '15' or tc == '70':
                 # End of payment (new one started or deposit ends here)
-                sender = content.PaymentSender(bg, name, address, org_no)
+                payment_address = content.PaymentAddress(
+                    address, post_code, town, country, country_code)
+                sender = content.PaymentSender(
+                    bg, name, payment_address, org_no)
+
                 if deduction:
                     entity = content.Deduction(
-                        amount, sender, ref, channel, serial, has_image, deduction_code)
+                        amount, sender, references, channel, serial,
+                        has_image, payment_informations, deduction_code)
                     self.__deductions.append(entity)
                 else:
                     entity = content.Payment(
-                        amount, sender, ref, channel, serial, has_image)
+                        amount, sender, references, channel, serial,
+                        has_image, payment_informations)
                     self.__payments.append(entity)
 
                 return entity
+            elif tc == '22' or tc == '23':
+                reference = self.__parse_reference(line)
+                references.append(reference)
+            elif tc == '25':
+                information_text = line[2:].strip()
+                payment_information = content.PaymentInformation(
+                    information_text)
+                payment_informations.append(payment_information)
             elif tc == '26':
-                name = line[2:].strip()
+                name = line[2:37].strip()
+                extra_name = line[37:72].strip()
             elif tc == '27':
-                addr_with_collapsed_ws = re.sub(r'\s+', ' ', line[2:])
-                address.insert(0, addr_with_collapsed_ws.strip())
+                address = line[2:37].strip()
+                post_code = line[37:46].strip()
             elif tc == '28':
-                address.append(line[2:].strip())
+                town = line[2:37].strip()
+                country = line[37:72].strip()
+                country_code = line[72:74].strip()
             elif tc == '29':
                 org_no = content.OrgNo(line[2:].strip().lstrip('0'))
 
             self.__lidx += 1
+
+    def __parse_reference(self, line):
+        ref_str = line[12:37].strip()
+        ref_type = int(line[55])
+
+        return content.PaymentReference(ref_str, ref_type)
 
     def __parse_footer(self):
         line = self.__lines[self.__lidx]
