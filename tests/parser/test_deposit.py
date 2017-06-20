@@ -113,7 +113,7 @@ class TestDeposit(unittest.TestCase):
         f = parser.parse(data)
         p = f.payments[0]
 
-        self.assertEquals(p.information_text, 'Betalning med extra refnr 65test')
+        self.assertEquals(str(p.information_text[0]), 'Betalning med extra refnr 65test')
 
     def test_payment_sender_address(self):
         data = '\n'.join((

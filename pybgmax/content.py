@@ -164,14 +164,14 @@ class PaymentInformation(object):
 
 class Payment(object):
     def __init__(self, amount, sender, references, channel, serial,
-                 has_image, payment_information):
+                 has_image, payment_informations):
         self.__amount = amount
         self.__sender = sender
         self.__references = references
         self.__channel = channel
         self.__serial = serial
         self.__has_image = has_image
-        self.__information_text = payment_information
+        self.__information_text = payment_informations
 
     @property
     def amount(self):
@@ -199,15 +199,15 @@ class Payment(object):
 
     @property
     def information_text(self):
-        return str(self.__information_text)
+        return self.__information_text
 
 
 class Deduction(Payment):
 
     def __init__(self, amount, sender, references, channel, serial,
-                 has_image, payment_information, deduction_code):
+                 has_image, payment_informations, deduction_code):
         super().__init__(amount, sender, references, channel, serial,
-                         has_image, payment_information)
+                         has_image, payment_informations)
 
         self.__deduction_code = deduction_code
 

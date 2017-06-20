@@ -138,6 +138,7 @@ class BgMaxParser(object):
         tc = line[0:2]
 
         references = []
+        payment_informations = []
 
         name = None
         extra_name = None
@@ -185,12 +186,12 @@ class BgMaxParser(object):
                 if deduction:
                     entity = content.Deduction(
                         amount, sender, references, channel, serial,
-                        has_image, payment_information, deduction_code)
+                        has_image, payment_informations, deduction_code)
                     self.__deductions.append(entity)
                 else:
                     entity = content.Payment(
                         amount, sender, references, channel, serial,
-                        has_image, payment_information)
+                        has_image, payment_informations)
                     self.__payments.append(entity)
 
                 return entity
@@ -201,6 +202,7 @@ class BgMaxParser(object):
                 information_text = line[2:].strip()
                 payment_information = content.PaymentInformation(
                     information_text)
+                payment_informations.append(payment_information)
             elif tc == '26':
                 name = line[2:37].strip()
                 extra_name = line[37:72].strip()
