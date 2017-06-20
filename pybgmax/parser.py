@@ -137,6 +137,8 @@ class BgMaxParser(object):
         line = self.__lines[self.__lidx]
         tc = line[0:2]
 
+        references = []
+
         name = None
         extra_name = None
         payment_information = None
@@ -156,9 +158,8 @@ class BgMaxParser(object):
         if bg_str is not None and len(bg_str) > 0:
             bg = content.BgNo(bg_str)
 
-        ref_str = line[12:37].strip()
-        ref_type = int(line[55])
-        ref = content.PaymentReference(ref_str, ref_type)
+        reference = self.__parse_reference(line)
+        references.append(reference)
 
         amount = float(line[37:55]) / 100.0
         channel = int(line[56])
@@ -180,18 +181,22 @@ class BgMaxParser(object):
                     address, post_code, town, country, country_code)
                 sender = content.PaymentSender(
                     bg, name, payment_address, org_no)
+
                 if deduction:
                     entity = content.Deduction(
-                        amount, sender, ref, channel, serial, has_image,
-                        payment_information, deduction_code)
+                        amount, sender, references, channel, serial,
+                        has_image, payment_information, deduction_code)
                     self.__deductions.append(entity)
                 else:
                     entity = content.Payment(
-                        amount, sender, ref, channel, serial, has_image,
-                        payment_information)
+                        amount, sender, references, channel, serial,
+                        has_image, payment_information)
                     self.__payments.append(entity)
 
                 return entity
+            elif tc == '22' or tc == '23':
+                reference = self.__parse_reference(line)
+                references.append(reference)
             elif tc == '25':
                 information_text = line[2:].strip()
                 payment_information = content.PaymentInformation(
@@ -210,6 +215,12 @@ class BgMaxParser(object):
                 org_no = content.OrgNo(line[2:].strip().lstrip('0'))
 
             self.__lidx += 1
+
+    def __parse_reference(self, line):
+        ref_str = line[12:37].strip()
+        ref_type = int(line[55])
+
+        return content.PaymentReference(ref_str, ref_type)
 
     def __parse_footer(self):
         line = self.__lines[self.__lidx]

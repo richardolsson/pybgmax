@@ -1,6 +1,3 @@
-from datetime import datetime
-
-
 class BgMaxFile(object):
 
     def __init__(self, format_version, timestamp, stage,
@@ -166,11 +163,11 @@ class PaymentInformation(object):
 
 
 class Payment(object):
-    def __init__(self, amount, sender, ref, channel, serial, has_image,
-                 payment_information):
+    def __init__(self, amount, sender, references, channel, serial,
+                 has_image, payment_information):
         self.__amount = amount
         self.__sender = sender
-        self.__ref = ref
+        self.__references = references
         self.__channel = channel
         self.__serial = serial
         self.__has_image = has_image
@@ -185,8 +182,8 @@ class Payment(object):
         return self.__sender
 
     @property
-    def ref(self):
-        return self.__ref
+    def references(self):
+        return self.__references
 
     @property
     def channel(self):
@@ -207,10 +204,10 @@ class Payment(object):
 
 class Deduction(Payment):
 
-    def __init__(self, amount, sender, ref, channel, serial, has_image,
-                 payment_information, deduction_code):
-        super().__init__(amount, sender, ref, channel, serial, has_image,
-                         payment_information)
+    def __init__(self, amount, sender, references, channel, serial,
+                 has_image, payment_information, deduction_code):
+        super().__init__(amount, sender, references, channel, serial,
+                         has_image, payment_information)
 
         self.__deduction_code = deduction_code
 
